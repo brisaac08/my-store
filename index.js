@@ -11,11 +11,36 @@ app.get('/nueva-ruta', (req, res) => {
 });
 
 app.get('/products', (req, res) => {
-  res.json({
-    name: 'Product 1',
-    price: 1000
-  });
+  res.json([
+    {
+      name: 'Product 1',
+      price: 1000
+    },
+    {
+      name: 'Product 2',
+      price: 2000
+    }
+  ]);
 });
+
+app.get('/products/:id', (req, res) => {
+  const {id} = req.params;
+  res.json(
+    {
+      id,
+      name: 'Product 1',
+      price: 1000
+    },
+)});
+
+app.get('/categories/:categoryId/products/:productId', (req, res) => {
+  const {categoryId, productId} = req.params;
+  res.json(
+    {
+      categoryId,
+      productId
+    },
+)});
 
 app.get('/categories', (req, res) => {
   res.json({
