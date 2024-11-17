@@ -1,18 +1,73 @@
 const express = require('express');
-const router = express.Router();
-const faker = require('faker');
 
-router.get('/', (req, res) => {
-  const users = [];
-  const { limit } = req.query;
-  const limitNumber = limit || 10;
-  for (let i = 0; i < limitNumber; i++) {
-    users.push({
-      name: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-    });
+const CategoryService = require('./../services/categoriesService');
+const validatorHandler = require('./../middlewares/validatorHandler');
+const { createCategorySchema, updateCategorySchema, getCategorySchema } = require('./../schemas/category.schema');
+
+const router = express.Router();
+const service = new CategoryService();
+
+router.get('/', async (req, res, next) => {
+  try {
+    const categories = await service.find();
+    res.json(categories);
+  } catch (error) {
+    next(error);
   }
-  res.json(users);
 });
+
+router.get('/:id',
+  validatorHandler(getCategorySchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const category = await service.findOne(id);
+      res.json(category);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.post('/',
+  validatorHandler(createCategorySchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const body = req.body;
+      const newCategory = await service.create(body);
+      res.status(201).json(newCategory);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.patch('/:id',
+  validatorHandler(getCategorySchema, 'params'),
+  validatorHandler(updateCategorySchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const body = req.body;
+      const category = await service.update(id, body);
+      res.json(category);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.delete('/:id',
+  validatorHandler(getCategorySchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      await service.delete(id);
+      res.status(201).json({id});
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 module.exports = router;
