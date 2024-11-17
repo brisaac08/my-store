@@ -5,17 +5,8 @@ const port = 3000;
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hola, este es mi primer server en express');
-});
-
-app.get('/nueva-ruta', (req, res) => {
-  res.send('Hola, esta es una nueva ruta');
-});
-
+routerApi(app);
 
 app.listen(port, () => {
   console.log('my port: '+ port)
 });
-
-routerApi(app);
